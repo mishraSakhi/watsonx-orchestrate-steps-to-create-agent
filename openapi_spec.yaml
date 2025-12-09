@@ -1,0 +1,144 @@
+openapi: 3.0.0
+info:
+  title: GitHub Documentation Reader API
+  description: |
+    Read and analyze documentation from public GitHub repositories.
+    Perfect for AI agents to answer questions about project documentation.
+    
+    Capabilities:
+    - Read README files
+    - Find all documentation files
+    - Read any file content
+    - Search for specific terms in files
+    - Get comprehensive documentation summaries
+  version: 2.0.0
+
+servers:
+  - url: https://api.github.com
+    description: GitHub API Server
+
+paths:
+  /repos/{owner}/{repo}/readme:
+    get:
+      operationId: getReadme
+      summary: Get repository README
+      description: Fetch the README file from a repository
+      tags:
+        - Documentation
+      parameters:
+        - name: owner
+          in: path
+          required: true
+          schema:
+            type: string
+          example: microsoft
+        - name: repo
+          in: path
+          required: true
+          schema:
+            type: string
+          example: vscode
+      responses:
+        '200':
+          description: README retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  content:
+                    type: string
+                  encoding:
+                    type: string
+                  name:
+                    type: string
+                  size:
+                    type: integer
+
+  /repos/{owner}/{repo}/contents/{path}:
+    get:
+      operationId: readFile
+      summary: Read specific file
+      description: Read content of any file in the repository
+      tags:
+        - File Reading
+      parameters:
+        - name: owner
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: repo
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: path
+          in: path
+          required: true
+          schema:
+            type: string
+          example: CONTRIBUTING.md
+      responses:
+        '200':
+          description: File content retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /repos/{owner}/{repo}/contents:
+    get:
+      operationId: findDocumentationFiles
+      summary: Find documentation files
+      description: List all documentation-related files in the repository
+      tags:
+        - Documentation Discovery
+      parameters:
+        - name: owner
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: repo
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Documentation files found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+
+  /search/code:
+    get:
+      operationId: searchInRepository
+      summary: Search for terms in repository
+      description: Search for specific terms across all files in repository
+      tags:
+        - Search
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+          example: "installation repo:microsoft/vscode"
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                type: object
+
+tags:
+  - name: Documentation
+  - name: File Reading
+  - name: Documentation Discovery
+  - name: Search
