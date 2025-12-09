@@ -1,0 +1,172 @@
+
+ IBM GitHub Enterprise – GitHub Assistant Implementation Guide (Clean Version)
+
+## 1. Key Differences: Public GitHub vs IBM GitHub Enterprise
+
+| Aspect              | Public GitHub                 | IBM GitHub Enterprise               |
+|---------------------|-------------------------------|------------------------------------ |
+| Base URL            | `https://api.github.com`      | `https://github.ibm.com/api/v3`     |
+| Authentication      | Optional for public repos     | Required                            |
+| Repository Access   | Public repos                  | Internal IBM repos                  |
+| Default Owner       | Any                           | `maximo-application-suite`          |
+
+
+
+
+ 2. OpenAPI Specification Changes
+
+Update Server URL
+```yaml
+servers:
+  - url: https://github.ibm.com/api/v3
+    description: IBM GitHub Enterprise API Server
+```
+
+Add Authentication
+```yaml
+security:
+  - githubToken: []
+```
+
+```yaml
+components:
+  securitySchemes:
+    githubToken:
+      type: http
+      scheme: bearer
+      bearerFormat: token
+```
+
+Lock Down Repository Owner
+
+Hardcode owner:
+```yaml
+/repos/maximo-application-suite/{repo}/readme:
+  parameters:
+    - name: repo
+      in: path
+      required: true
+```
+Update API Info
+```yaml
+info:
+  title: IBM MAS GitHub Documentation Reader API
+  version: 2.0.0
+```
+
+Add Standard Error Responses
+```yaml
+responses:
+  '200': { description: Success }
+  '401': { description: Unauthorized }
+  '403': { description: Forbidden }
+  '404': { description: Not found }
+```
+
+---
+
+3. IBM GitHub Enterprise Personal Access Token (PAT)
+
+How to Generate
+1. Go to `https://github.ibm.com`
+2. Profile → Settings → Developer settings
+3. Personal access tokens → Generate new token
+4. Select scope: `repo`
+5. Generate and copy token
+
+Format
+`ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`
+
+---
+
+4. Watsonx Orchestrate Agent Configuration
+
+Agent Description
+- Fetches documentation from IBM GitHub Enterprise  
+- Default repository: `maximo-application-suite/support`  
+- Requires IBM GitHub Enterprise PAT  
+
+Key Operations
+- `getReadme`
+- `readFile`
+- `findDocumentationFiles`
+- `searchInRepository`
+
+Default Behavior
+```
+Use owner = "maximo-application-suite".
+Use repo = "support" unless user specifies otherwise.
+```
+
+---
+
+5. Adding the OpenAPI Tool in Orchestrate
+
+1. Build → AI Model → Create Agent  
+2. Toolset → Add Tool → OpenAPI  
+3. Upload modified `openapi_spec.yaml`  
+4. Configure authentication: Bearer Token → paste PAT  
+5. Add all endpoints  
+
+---
+
+6. Guidelines for the Agent
+
+Installation Requests
+- Read README from `maximo-application-suite/support`
+- If missing, check:
+  - `docs/install.md`
+  - `docs/installation.md`
+  - `INSTALL.md`
+
+Configuration Requests
+Check in order:
+1. `docs/configuration.md`
+2. `docs/config.md`
+3. `CONFIG.md`
+4. README configuration section
+
+Troubleshooting Requests
+Check in order:
+1. `docs/troubleshooting.md`
+2. `docs/faq.md`
+3. `TROUBLESHOOTING.md`
+
+---
+
+7. Testing Checklist
+
+- Authentication works  
+- Default repo is used  
+- File reading works  
+- Search works  
+- Errors handled correctly  
+
+---
+
+8. Common Issues
+
+### Common Issues
+
+| Issue            | Cause                   | Fix                  |
+|------------------|-------------------------|----------------------|
+| 401 Unauthorized | Invalid/expired token   | Regenerate PAT       |
+| 404 Not Found    | Wrong repo/owner        | Verify repo path     |
+| 403 Forbidden    | Missing scopes          | Add `repo` scope     |
+| Rate Limit       | Too many requests       | Wait/reset           |
+
+---
+
+9. Deployment & Maintenance
+
+- Deploy after tests  
+- Monitor authentication failures  
+- Rotate PAT every 90 days  
+- Update OpenAPI if GitHub API changes  
+
+---
+10. Security Requirements
+
+- Never store PAT in code  
+- Use minimal scopes  
+- comply with IBM internal security policies  
