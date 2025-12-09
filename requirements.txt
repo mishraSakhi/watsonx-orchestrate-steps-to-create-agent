@@ -1,7 +1,0 @@
-# Core dependencies for GitHub Documentation Reader
-requests>=2.31.0
-python-dotenv>=1.0.0
-PyGithub>=2.1.1
-
-# Optional: For colored terminal output
-colorama>=0.4.6
