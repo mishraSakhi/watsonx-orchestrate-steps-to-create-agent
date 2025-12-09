@@ -1,5 +1,5 @@
 
- IBM GitHub Enterprise – GitHub Assistant Implementation Guide (Clean Version)
+IBM GitHub Enterprise – GitHub Assistant Implementation Guide (Clean Version)
 
 ## 1. Key Differences: Public GitHub vs IBM GitHub Enterprise
 
@@ -170,3 +170,6 @@ Check in order:
 - Never store PAT in code  
 - Use minimal scopes  
 - comply with IBM internal security policies  
+
+
+
