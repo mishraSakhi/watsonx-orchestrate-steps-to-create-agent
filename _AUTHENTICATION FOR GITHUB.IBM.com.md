@@ -1,3 +1,5 @@
+https://docs.google.com/document/d/1B2Blh1wAwqf12Q5PUM5RkyCyPd-rOUAqh3NuDvtca3c/edit?usp=sharing
+
 STEPS TO SET UP AUTHENTICATION FOR [GITHUB.IBM.COM](http://GITHUB.IBM.COM)
 
 ### **Servers**
